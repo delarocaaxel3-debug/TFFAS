@@ -1,406 +1,897 @@
---==================================================
--- TFFA (THROW A FOOD FOR ANIMALS) - QUEEN HUB
--- Features: Live Sniffer, FPS/Ping, Auto Farm
---==================================================
+--[[ 
+    QUEEN/MEI Hub v3.1
+    Steal an Egg script hub — GUI + runner
+    Tabs: Keyless / Key System / Animations / Misc / Config
+    Theme: Deep Purple & Hot Pink
+]]
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+-- ============ CONFIG ============
+local CFG = {
+    Name    = "QUEEN/MEI Hub",
+    Version = "v3.1",
+    Accent  = Color3.fromRGB(255, 105, 180), -- Hot Pink
+    BG      = Color3.fromRGB(18, 10, 26),    -- Deep Purple
+    Panel   = Color3.fromRGB(32, 18, 45),    -- Dark Purple
+    Button  = Color3.fromRGB(45, 25, 65),    -- Mid Purple
+    Hover   = Color3.fromRGB(65, 35, 90),    -- Lighter Purple
+    Text    = Color3.fromRGB(255, 245, 255), -- Tinted White
+    SubText = Color3.fromRGB(180, 140, 210), -- Muted Lavender
+    Good    = Color3.fromRGB(120, 220, 140),
+    Bad     = Color3.fromRGB(230, 110, 110),
+}
+
+local CONFIG_FILE = "QueenMeiHub_config.json"
+
+-- ============ SCRIPTS ============
+local HUB_SCRIPTS = {
+    {
+        tab = "Keyless",
+        scripts = {
+            { name = "Rene Hub",   url = "https://raw.githubusercontent.com/sabscrip-arch/srver/refs/heads/main/Stealanegg" },
+            { name = "Pulse Hub",  url = "https://raw.githubusercontent.com/PulseZax/Loader/refs/heads/main/.lua" },
+            { name = "UB Hub",     url = "https://raw.githubusercontent.com/TeamUBHub/UBLoader/refs/heads/main/Loader.lua" },
+            { name = "Ouroboros",  url = "https://raw.githubusercontent.com/joustingmatch/Ouroboros/main/loader.lua" },
+            { name = "Cat Hub",    url = "https://raw.githubusercontent.com/showscript-hub/Script/refs/heads/main/Cat-hub" },
+            { name = "Khay v6",    url = "https://api.obscuravm.com/scripts/7982111783414007510" },
+            { name = "Leon",       url = "https://raw.githubusercontent.com/n01771542-cmd/faluahub/main/main.lua" },
+            { name = "Sena v6",    url = "https://senahub.xyz/senav6" },
+            { name = "Venyx Hub",  url = "https://raw.githubusercontent.com/tienkhanh1/Venyx/main/VenyxHub" },
+            { name = "Tsuo",       url = "https://raw.githubusercontent.com/Tsuo7/TsuoHub/main/stealanegg" },
+            { name = "Limbo Hub",  url = "https://limbohub.my.id/loader.lua" },
+            { name = "Clouth Hub", url = "https://raw.githubusercontent.com/ClouthubOnTop/Loader/main/main.lua" },
+            { name = "Tokyo Hub",  url = "https://flowauth.net/v1/loaders/c3a94b11eb467eff27a09e065565501f.lua" },
+            { name = "Chilli v6",  url = "https://id.tomroblox.com/raw/kairoblox/chilli-x-venyx-viet-hoa-v6-vip-pro98" },
+            { name = "Equinox",    url = "https://api.jnkie.com/api/v1/luascripts/public/3db06e0eaa1e4e8bf5e9d3192fa71e0bad2d1d1af5b11c0a58e6b708ad4487f4/download", pre = 'getgenv().SCRIPT_KEY = "KEYLESS"' },
+            { name = "Xuan",       url = "https://raw.githubusercontent.com/xuann-hubb/loaderV2/refs/heads/main/LoaderV2.lua" },
+            { name = "Solaris Hub",url = "https://api.obscuravm.com/scripts/3657260198619051144" },
+            { name = "Miranda Hub",url = "https://raw.githubusercontent.com/miirandahub/loader/main/stealaeggs" },
+            { name = "Foxname",    url = "https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/Fn-stealanegg.lua" },
+            { name = "Solix",      url = "https://solixhub.com/loader" },
+            { name = "Null Hub",   url = "https://nullhub-loader.vercel.app/loader" },
+            { name = "Blyxo Hub",  url = "https://flowauth.net/v1/loaders/69d3463240384f3a73fbe32c178093a2.lua" },
+            { name = "Yokudo Hub", url = "https://raw.githubusercontent.com/betdoyvaka/stealanegg/main/Loader.lua" },
+            { name = "Lumin Hub",  url = "https://scriptblox.com/raw/Steal-An-Egg-Lumin-Hub-223771" },
+            { name = "Darkness",   url = "https://raw.githubusercontent.com/Darkness-KingScripts/Steal-a-egg/refs/heads/main/Darknesshub" },
+            { name = "KAZUMI",     url = "https://pastefy.app/J4wosPYe/raw" },
+        },
+    },
+    {
+        tab = "Key System",
+        scripts = {
+            { name = "Big Froot",     url = "https://raw.githubusercontent.com/hanniii1/Loader/refs/heads/main/BFLoader.lua" },
+            { name = "Ajjans",        url = "https://api.luarmor.net/files/v4/loaders/359e97f8618e9008afe5f496184ebb7c.lua" },
+            { name = "Chilli Hub V3", url = "https://raw.githubusercontent.com/napun87/stealanegg/refs/heads/main/chilli.otcaydodaiNoKey3.7.lua" },
+            { name = "Clover",        url = "https://cloverhub.app/clover.lua" },
+            { name = "Speed Hub",     url = "https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua" },
+            { name = "Nasi Rendang",  url = "https://raw.githubusercontent.com/JualNasiRendang/loader/refs/heads/main/main.lua" },
+            { name = "Realkid",       url = "https://raw.githubusercontent.com/realkidhub/realkid/refs/heads/main/main.lua" },
+            { name = "Chilli v5",     url = "https://raw.githubusercontent.com/ronnei/hihi/refs/heads/main/chillihubv5.lua" },
+            { name = "Fyy",           url = "https://FyyCommunity.com" },
+            { name = "Pig Hub",       url = "https://raw.githubusercontent.com/mopsscript7-gif/steal-an-egg/refs/heads/main/script.lua" },
+            { name = "Zerion",        url = "https://zeroinhub.com/api/script" },
+            { name = "Neox Hub",      url = "https://scriptblox.com/raw/Steal-An-Egg-NEOX-HUB-or-AUTOFARM-EGGS-or-PLACE-AND-HATCH-ALL-EGGS-or-and-MUCH-224830" },
+        },
+    },
+}
+
+-- ============ ANIMATIONS ============
+local function dec(rev) return tonumber(rev:reverse()) end
+local ANIMS = {
+    R6 = {
+        { name = "Idle", id = dec("175534081") }, { name = "Walk", id = dec("453624081") },
+        { name = "Run", id = dec("453624081") }, { name = "Jump", id = dec("207057521") },
+        { name = "Fall", id = dec("841634081") }, { name = "Climb", id = dec("433634081") },
+        { name = "Sit", id = dec("699031871") }, { name = "Tool None", id = dec("874393281") },
+        { name = "Tool Slash", id = dec("093769921") }, { name = "Tool Lunge", id = dec("874769921") },
+        { name = "Wave", id = dec("379777821") }, { name = "Point", id = dec("753358821") },
+        { name = "Dance", id = dec("899534281") }, { name = "Dance2", id = dec("248634281") },
+        { name = "Dance3", id = dec("730194281") }, { name = "Laugh", id = dec("497478821") },
+        { name = "Cheer", id = dec("250400921") },
+    },
+    R15 = {
+        { name = "Idle", id = dec("666667705") }, { name = "Walk", id = dec("628777705") },
+        { name = "Run", id = dec("417767705") }, { name = "Jump", id = dec("000567705") },
+        { name = "Fall", id = dec("869767705") }, { name = "Climb", id = dec("446567705") },
+        { name = "Sit", id = dec("3071826052") }, { name = "Tool None", id = dec("331867705") },
+        { name = "Tool Slash", id = dec("573867705") }, { name = "Tool Lunge", id = dec("086867705") },
+        { name = "Wave", id = dec("932077705") }, { name = "Point", id = dec("354077705") },
+        { name = "Dance", id = dec("910177705") }, { name = "Dance2", id = dec("559177705") },
+        { name = "Dance3", id = dec("401277705") }, { name = "Laugh", id = dec("818077705") },
+        { name = "Cheer", id = dec("776077705") },
+    },
+}
+local SLOT_MAP = {
+    ["Idle"] = "idle", ["Walk"] = "walk", ["Run"] = "run", ["Jump"] = "jump",
+    ["Fall"] = "fall", ["Climb"] = "climb", ["Sit"] = "sit",
+    ["Tool None"] = "toolnone", ["Tool Slash"] = "toolslash", ["Tool Lunge"] = "toollunge",
+    ["Wave"] = "wave", ["Point"] = "point", ["Dance"] = "dance",
+    ["Dance2"] = "dance2", ["Dance3"] = "dance3", ["Laugh"] = "laugh", ["Cheer"] = "cheer",
+}
+local SLOT_LIST = {}
+for k in pairs(SLOT_MAP) do table.insert(SLOT_LIST, k) end
+table.sort(SLOT_LIST)
+
+-- ============ ENV ============
 local UIS = game:GetService("UserInputService")
-local Stats = game:GetService("Stats")
+local Players = game:GetService("Players")
+local HS = game:GetService("HttpService")
+local Camera = workspace.CurrentCamera
 local LP = Players.LocalPlayer
-local PlayerGui = LP:WaitForChild("PlayerGui")
+local TS = game:GetService("TeleportService")
 
-local Theme = {
-    BG      = Color3.fromRGB(15, 15, 18),
-    Panel   = Color3.fromRGB(25, 25, 30),
-    Sidebar = Color3.fromRGB(20, 20, 25),
-    Text    = Color3.fromRGB(255, 255, 255),
-    Muted   = Color3.fromRGB(130, 130, 140),
-    Accent  = Color3.fromRGB(0, 200, 255),
-    Good    = Color3.fromRGB(0, 255, 100),
-    Bad     = Color3.fromRGB(255, 60, 60)
-}
+local function getParent()
+    if gethui then
+        local ok, hui = pcall(gethui)
+        if ok and hui then return hui end
+    end
+    local ok, cg = pcall(function() return game:GetService("CoreGui") end)
+    if ok and cg then return cg end
+    return LP:WaitForChild("PlayerGui")
+end
 
+local function create(class, props)
+    local inst = Instance.new(class)
+    for k, v in pairs(props) do
+        if k ~= "Parent" then inst[k] = v end
+    end
+    if props.Parent then inst.Parent = props.Parent end
+    return inst
+end
+
+local parent = getParent()
+if parent:FindFirstChild("QueenMeiHub") then
+    parent.QueenMeiHub:Destroy()
+end
+
+-- ============ STATE ============
 local State = {
-    AutoTrain = false, AutoUpgrade = false, AutoThrow = false,
-    AutoBuyFood = false, AutoPlacePet = false, AutoQuest = false,
-    AutoBuyEvent = false, AutoFusePet = false
+    anims      = {},
+    iconOn     = true,
+    iconPos    = { x = 40, y = 120 },
+    iconSize   = 56,
+    antiKick   = false,
+    antiGuard  = false,
 }
 
--- The Sniffer Memory
-local Learned = {
-    Train = nil, Upgrade = nil, Buy = nil, Equip = nil, Quest = nil, Fuse = nil
-}
+-- ============ GUI ============
+local gui = create("ScreenGui", {
+    Name = "QueenMeiHub",
+    ResetOnSpawn = false,
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+    Parent = parent,
+})
+if syn and syn.protect_gui then pcall(syn.protect_gui, gui) end
 
--- Cleanup
-for _, name in ipairs({"TFFA_Main"}) do
-    local old = PlayerGui:FindFirstChild(name)
-    if old then old:Destroy() end
-end
+local viewport = Camera and Camera.ViewportSize or Vector2.new(1280, 720)
+local winWidth  = math.min(460, math.max(300, viewport.X - 40))
+local winHeight = math.min(440, math.max(320, viewport.Y - 80))
 
---==================================================
--- MAIN HUB UI
---==================================================
-local Gui = Instance.new("ScreenGui")
-Gui.Name = "TFFA_Main"
-Gui.ResetOnSpawn = false
-Gui.IgnoreGuiInset = true
-Gui.Parent = PlayerGui
+local main = create("Frame", {
+    Name = "Main",
+    Parent = gui,
+    Size = UDim2.new(0, winWidth, 0, winHeight),
+    Position = UDim2.new(0.5, 0, 0.5, 0),
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    BackgroundColor3 = CFG.BG,
+    BorderSizePixel = 0,
+    Active = true,
+})
+create("UICorner", { CornerRadius = UDim.new(0, 12), Parent = main })
+create("UIStroke", { Color = CFG.Accent, Thickness = 1.5, Transparency = 0.4, Parent = main })
 
-local Main = Instance.new("Frame")
-Main.Size = UDim2.fromOffset(550, 380)
-Main.Position = UDim2.fromScale(0.5, 0.5)
-Main.AnchorPoint = Vector2.new(0.5, 0.5)
-Main.BackgroundColor3 = Theme.BG
-Main.BorderSizePixel = 0
-Main.Parent = Gui
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 8)
+-- Title bar with Gradient
+local titleBar = create("Frame", {
+    Parent = main,
+    Size = UDim2.new(1, 0, 0, 38),
+    BackgroundColor3 = CFG.Panel,
+    BorderSizePixel = 0,
+})
+create("UICorner", { CornerRadius = UDim.new(0, 12), Parent = titleBar })
+create("Frame", {
+    Parent = titleBar,
+    Size = UDim2.new(1, 0, 0, 12),
+    Position = UDim2.new(0, 0, 1, -12),
+    BackgroundColor3 = CFG.Panel,
+    BorderSizePixel = 0,
+})
 
-local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(60, 60, 60)
-stroke.Thickness = 1
-stroke.Parent = Main
+-- Gradient Accent Line
+create("Frame", {
+    Parent = titleBar,
+    Size = UDim2.new(1, 0, 0, 2),
+    Position = UDim2.new(0, 0, 1, -2),
+    BackgroundColor3 = CFG.Accent,
+    BorderSizePixel = 0,
+})
 
--- Header
-local Header = Instance.new("Frame")
-Header.Size = UDim2.new(1, 0, 0, 36)
-Header.BackgroundColor3 = Theme.Panel
-Header.BorderSizePixel = 0
-Header.Parent = Main
-Instance.new("UICorner", Header).CornerRadius = UDim.new(0, 8)
+create("TextLabel", {
+    Parent = titleBar,
+    Position = UDim2.new(0, 14, 0, 0),
+    Size = UDim2.new(1, -110, 1, 0),
+    BackgroundTransparency = 1,
+    Text = CFG.Name .. "  " .. CFG.Version,
+    TextColor3 = CFG.Text,
+    Font = Enum.Font.GothamBold,
+    TextSize = 15,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextTruncate = Enum.TextTruncate.AtEnd,
+})
 
-local headerFix = Instance.new("Frame")
-headerFix.Size = UDim2.new(1, 0, 0, 15)
-headerFix.Position = UDim2.new(0, 0, 1, -15)
-headerFix.BackgroundColor3 = Theme.Panel
-headerFix.BorderSizePixel = 0
-headerFix.Parent = Header
+local minBtn = create("TextButton", {
+    Parent = titleBar,
+    Position = UDim2.new(1, -58, 0, 8),
+    Size = UDim2.new(0, 20, 0, 20),
+    BackgroundTransparency = 1,
+    Text = "—",
+    TextColor3 = CFG.SubText,
+    Font = Enum.Font.GothamBold,
+    TextSize = 16,
+    BorderSizePixel = 0,
+})
+minBtn.MouseEnter:Connect(function() minBtn.TextColor3 = CFG.Accent end)
+minBtn.MouseLeave:Connect(function() minBtn.TextColor3 = CFG.SubText end)
 
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(0.5, 0, 1, 0)
-Title.Position = UDim2.fromOffset(15, 0)
-Title.BackgroundTransparency = 1
-Title.Text = "QUEEN HUB | TFFA"
-Title.TextColor3 = Theme.Text
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 14
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.Parent = Header
+local closeBtn = create("TextButton", {
+    Parent = titleBar,
+    Position = UDim2.new(1, -32, 0, 8),
+    Size = UDim2.new(0, 20, 0, 20),
+    BackgroundTransparency = 1,
+    Text = "X",
+    TextColor3 = CFG.SubText,
+    Font = Enum.Font.GothamBold,
+    TextSize = 14,
+    BorderSizePixel = 0,
+})
+closeBtn.MouseEnter:Connect(function() closeBtn.TextColor3 = CFG.Bad end)
+closeBtn.MouseLeave:Connect(function() closeBtn.TextColor3 = CFG.SubText end)
+closeBtn.MouseButton1Click:Connect(function() gui:Destroy() end)
 
--- FPS / PING LABEL
-local statsLabel = Instance.new("TextLabel")
-statsLabel.Size = UDim2.new(0.5, -40, 1, 0)
-statsLabel.Position = UDim2.new(0.5, 0, 0, 0)
-statsLabel.BackgroundTransparency = 1
-statsLabel.Text = "FPS: -- | Ping: -- ms"
-statsLabel.TextColor3 = Theme.Accent
-statsLabel.Font = Enum.Font.Code
-statsLabel.TextSize = 12
-statsLabel.TextXAlignment = Enum.TextXAlignment.Right
-statsLabel.Parent = Header
+-- Dragging
+local dragging, dragStart, startPos
+titleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging, dragStart, startPos = true, input.Position, main.Position
+    end
+end)
+titleBar.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = false
+    end
+end)
+UIS.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local d = input.Position - dragStart
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + d.X, startPos.Y.Scale, startPos.Y.Offset + d.Y)
+    end
+end)
 
-local Close = Instance.new("TextButton")
-Close.Size = UDim2.fromOffset(20, 20)
-Close.Position = UDim2.new(1, -30, 0.5, -10)
-Close.BackgroundTransparency = 1
-Close.Text = "X"
-Close.TextColor3 = Theme.Muted
-Close.Font = Enum.Font.GothamBold
-Close.Parent = Header
-Close.MouseButton1Click:Connect(function() Gui:Destroy() end)
+-- Toast System
+local toastHolder = create("Frame", {
+    Parent = gui,
+    Position = UDim2.new(1, -20, 0, 20),
+    AnchorPoint = Vector2.new(1, 0),
+    Size = UDim2.new(0, 0, 0, 0),
+    BackgroundTransparency = 1,
+})
+create("UIListLayout", {
+    Parent = toastHolder,
+    Padding = UDim.new(0, 6),
+    HorizontalAlignment = Enum.HorizontalAlignment.Right,
+    SortOrder = Enum.SortOrder.LayoutOrder,
+})
 
--- Drag Main
-local drag, start, pos
-Header.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then drag = true; start = i.Position; pos = Main.Position end end)
-UIS.InputChanged:Connect(function(i) if drag and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then local d = i.Position - start; Main.Position = UDim2.new(pos.X.Scale, pos.X.Offset + d.X, pos.Y.Scale, pos.Y.Offset + d.Y) end end)
-UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then drag = false end end)
-
--- Sidebar
-local Sidebar = Instance.new("Frame")
-Sidebar.Size = UDim2.fromOffset(120, 320)
-Sidebar.Position = UDim2.fromOffset(10, 50)
-Sidebar.BackgroundColor3 = Theme.Sidebar
-Sidebar.BorderSizePixel = 0
-Sidebar.Parent = Main
-Instance.new("UICorner", Sidebar).CornerRadius = UDim.new(0, 8)
-
-local sideList = Instance.new("UIListLayout")
-sideList.Padding = UDim.new(0, 2)
-sideList.Parent = Sidebar
-
-local tabs = {{"Farming", "🌾"}, {"Events", "🎃"}, {"Sniffer", "📡"}}
-local tabBtns = {}
-
-for i, data in ipairs(tabs) do
-    local tb = Instance.new("TextButton")
-    tb.Size = UDim2.new(1, 0, 0, 36)
-    tb.BackgroundTransparency = 1
-    tb.Text = "  " .. data[2] .. "  " .. data[1]
-    tb.TextColor3 = (i == 1) and Theme.Accent or Theme.Muted
-    tb.Font = Enum.Font.GothamBold
-    tb.TextSize = 13
-    tb.TextXAlignment = Enum.TextXAlignment.Left
-    tb.BorderSizePixel = 0
-    tb.Parent = Sidebar
-    table.insert(tabBtns, tb)
-end
-
--- Pages
-local Pages = Instance.new("Frame")
-Pages.Size = UDim2.new(1, -140, 320, 0)
-Pages.Position = UDim2.fromOffset(140, 50)
-Pages.BackgroundTransparency = 1
-Pages.Parent = Main
-
-local function MakePage(name)
-    local p = Instance.new("ScrollingFrame")
-    p.Name = name
-    p.Size = UDim2.new(1, 0, 1, 0)
-    p.BackgroundColor3 = Theme.Panel
-    p.BorderSizePixel = 0
-    p.ScrollBarThickness = 3
-    p.ScrollBarImageColor3 = Theme.Accent
-    p.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    p.CanvasSize = UDim2.new()
-    p.Visible = (name == "Farming")
-    p.Parent = Pages
-    Instance.new("UICorner", p).CornerRadius = UDim.new(0, 8)
-    local pad = Instance.new("UIPadding", p)
-    pad.PaddingTop = UDim.new(0, 10); pad.PaddingLeft = UDim.new(0, 10); pad.PaddingRight = UDim.new(0, 10); pad.PaddingBottom = UDim.new(0, 10)
-    local list = Instance.new("UIListLayout", p)
-    list.Padding = UDim.new(0, 8); list.SortOrder = Enum.SortOrder.LayoutOrder
-    return p
-end
-
-local pFarm = MakePage("Farming")
-local pEvent = MakePage("Events")
-local pSniffer = MakePage("Sniffer")
-
--- UI Components
-local function MakeToggle(parent, text, default, callback)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 0, 0, 38)
-    btn.BackgroundColor3 = Theme.BG
-    btn.Text = "  " .. text
-    btn.TextColor3 = Theme.Text
-    btn.Font = Enum.Font.GothamMedium
-    btn.TextSize = 12
-    btn.TextXAlignment = Enum.TextXAlignment.Left
-    btn.BorderSizePixel = 0
-    btn.AutoButtonColor = false
-    btn.Parent = parent
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-    
-    local status = Instance.new("TextLabel")
-    status.Size = UDim2.fromOffset(40, 20)
-    status.Position = UDim2.new(1, -45, 0.5, -10)
-    status.BackgroundTransparency = 1
-    status.Text = default and "ON" or "OFF"
-    status.TextColor3 = default and Theme.Good or Theme.Muted
-    status.Font = Enum.Font.GothamBold
-    status.TextSize = 11
-    status.Parent = btn
-    
-    local state = default
-    btn.MouseButton1Click:Connect(function()
-        state = not state
-        status.Text = state and "ON" or "OFF"
-        status.TextColor3 = state and Theme.Good or Theme.Muted
-        btn.BackgroundColor3 = state and Color3.fromRGB(35, 45, 35) or Theme.BG
-        if callback then callback(state) end
+local function toast(msg, color)
+    local t = create("Frame", {
+        Parent = toastHolder,
+        Size = UDim2.new(0, 240, 0, 38),
+        BackgroundColor3 = CFG.Panel,
+        BorderSizePixel = 0,
+    })
+    create("UICorner", { CornerRadius = UDim.new(0, 8), Parent = t })
+    create("UIStroke", { Color = color or CFG.Accent, Thickness = 1.5, Parent = t })
+    create("TextLabel", {
+        Parent = t,
+        Position = UDim2.new(0, 12, 0, 0),
+        Size = UDim2.new(1, -24, 1, 0),
+        BackgroundTransparency = 1,
+        Text = msg,
+        TextColor3 = CFG.Text,
+        Font = Enum.Font.Gotham,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextTruncate = Enum.TextTruncate.AtEnd,
+    })
+    task.delay(3, function()
+        if not t.Parent then return end
+        for i = 1, 20 do
+            if not t.Parent then return end
+            t.BackgroundTransparency = i / 20
+            task.wait(0.02)
+        end
+        if t.Parent then t:Destroy() end
     end)
 end
 
--- Populate Pages
-MakeToggle(pFarm, "1. Auto Train (Pull Ups)", false, function(v) State.AutoTrain = v end)
-MakeToggle(pFarm, "2. Auto Upgrade (Strength)", false, function(v) State.AutoUpgrade = v end)
-MakeToggle(pFarm, "3. Auto Throw (Perfect 20+)", false, function(v) State.AutoThrow = v end)
-MakeToggle(pFarm, "4. Auto Buy Food", false, function(v) State.AutoBuyFood = v end)
-MakeToggle(pFarm, "5. Auto Place Best Pet", false, function(v) State.AutoPlacePet = v end)
+-- Floating Icon
+local icon = create("TextButton", {
+    Parent = gui,
+    Size = UDim2.new(0, State.iconSize, 0, State.iconSize),
+    Position = UDim2.new(0, State.iconPos.x, 1, -State.iconPos.y),
+    AnchorPoint = Vector2.new(0, 1),
+    BackgroundColor3 = CFG.BG,
+    Text = "QM",
+    TextColor3 = CFG.Accent,
+    Font = Enum.Font.GothamBold,
+    TextSize = 16,
+    BorderSizePixel = 0,
+    AutoButtonColor = false,
+    Visible = State.iconOn,
+    ZIndex = 10,
+})
+create("UICorner", { CornerRadius = UDim.new(1, 0), Parent = icon })
+create("UIStroke", { Color = CFG.Accent, Thickness = 2, Parent = icon })
 
-MakeToggle(pEvent, "1. Auto Quest", false, function(v) State.AutoQuest = v end)
-MakeToggle(pEvent, "2. Auto Buy 2x Boosts", false, function(v) State.AutoBuyEvent = v end)
-MakeToggle(pEvent, "3. Auto Fuse Best Pet", false, function(v) State.AutoFusePet = v end)
-
--- Sniffer Page
-local snifferLog = Instance.new("TextLabel")
-snifferLog.Size = UDim2.new(1, 0, 0, 150)
-snifferLog.BackgroundColor3 = Theme.BG
-snifferLog.Text = "Waiting for you to click...\n\nIf a toggle isn't working, play the game manually. The script will learn the remote and show it here."
-snifferLog.TextColor3 = Theme.Good
-snifferLog.Font = Enum.Font.Code
-snifferLog.TextSize = 11
-snifferLog.TextWrapped = true
-snifferLog.TextYAlignment = Enum.TextYAlignment.Top
-snifferLog.Parent = pSniffer
-Instance.new("UICorner", snifferLog).CornerRadius = UDim.new(0, 6)
-
--- Tab Switching
-tabBtns[1].MouseButton1Click:Connect(function()
-    pFarm.Visible = true; pEvent.Visible = false; pSniffer.Visible = false
-    tabBtns[1].TextColor3 = Theme.Accent; tabBtns[2].TextColor3 = Theme.Muted; tabBtns[3].TextColor3 = Theme.Muted
-end)
-tabBtns[2].MouseButton1Click:Connect(function()
-    pFarm.Visible = false; pEvent.Visible = true; pSniffer.Visible = false
-    tabBtns[1].TextColor3 = Theme.Muted; tabBtns[2].TextColor3 = Theme.Accent; tabBtns[3].TextColor3 = Theme.Muted
-end)
-tabBtns[3].MouseButton1Click:Connect(function()
-    pFarm.Visible = false; pEvent.Visible = false; pSniffer.Visible = true
-    tabBtns[1].TextColor3 = Theme.Muted; tabBtns[2].TextColor3 = Theme.Muted; tabBtns[3].TextColor3 = Theme.Accent
-end)
-
---==================================================
--- LIVE SNIFFER & FPS/PING
---==================================================
-local frames = 0
-local lastTime = tick()
-
-RunService.RenderStepped:Connect(function()
-    -- FPS/Ping Counter
-    frames = frames + 1
-    local currentTime = tick()
-    if currentTime - lastTime >= 1 then
-        local fps = frames
-        frames = 0
-        lastTime = currentTime
-        
-        local ping = "N/A"
-        pcall(function()
-            ping = Stats.Network.ServerStatsItem["Data Ping"]:GetValueString()
-        end)
-        statsLabel.Text = string.format("FPS: %d | Ping: %s", fps, ping)
+local iconDragging, iconDragStart, iconStartPos, iconMoved
+icon.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        iconDragging = true
+        iconMoved = false
+        iconDragStart = input.Position
+        iconStartPos = icon.Position
     end
 end)
-
--- The Hook (Learns from you)
-local oldNamecall
-oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
-    local method = getnamecallmethod()
-    local args = {...}
-    
-    if method == "FireServer" or method == "InvokeServer" then
-        local name = self.Name:lower()
-        
-        -- If you manually do the action, it learns it
-        if name:find("train") or name:find("pull") or name:find("click") then
-            Learned.Train = {Remote = self, Args = args}
-            snifferLog.Text = "✅ Learned Train: " .. self.Name
-        elseif name:find("upgrade") or name:find("strength") then
-            Learned.Upgrade = {Remote = self, Args = args}
-            snifferLog.Text = "✅ Learned Upgrade: " .. self.Name
-        elseif name:find("buy") or name:find("purchase") then
-            Learned.Buy = {Remote = self, Args = args}
-            snifferLog.Text = "✅ Learned Buy: " .. self.Name
-        elseif name:find("equip") or name:find("pet") then
-            Learned.Equip = {Remote = self, Args = args}
-            snifferLog.Text = "✅ Learned Pet: " .. self.Name
-        elseif name:find("quest") then
-            Learned.Quest = {Remote = self, Args = args}
-            snifferLog.Text = "✅ Learned Quest: " .. self.Name
-        elseif name:find("fuse") then
-            Learned.Fuse = {Remote = self, Args = args}
-            snifferLog.Text = "✅ Learned Fuse: " .. self.Name
+UIS.InputChanged:Connect(function(input)
+    if iconDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local d = input.Position - iconDragStart
+        if math.abs(d.X) > 4 or math.abs(d.Y) > 4 then
+            iconMoved = true
+        end
+        icon.Position = UDim2.new(iconStartPos.X.Scale, iconStartPos.X.Offset + d.X, iconStartPos.Y.Scale, iconStartPos.Y.Offset + d.Y)
+    end
+end)
+icon.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if iconDragging then
+            iconDragging = false
+            State.iconPos.x = icon.Position.X.Offset
+            State.iconPos.y = -(icon.Position.Y.Offset)
         end
     end
-    return oldNamecall(self, ...)
 end)
 
---==================================================
--- AUTO FARM LOOPS (Using Learned Data)
---==================================================
-local function Replay(Data)
-    if not Data or not Data.Remote then return end
-    pcall(function()
-        if Data.Remote:IsA("RemoteEvent") then
-            Data.Remote:FireServer(unpack(Data.Args))
-        else
-            Data.Remote:InvokeServer(unpack(Data.Args))
-        end
-    end)
+icon.MouseButton1Click:Connect(function()
+    if iconMoved then return end
+    main.Visible = not main.Visible
+    toast(main.Visible and "Hub opened" or "Hub hidden", main.Visible and CFG.Good or CFG.SubText)
+end)
+
+local function setIconVisible(on)
+    State.iconOn = on
+    icon.Visible = on
 end
 
-task.spawn(function()
-    while task.wait(0.5) do
-        if State.AutoTrain then Replay(Learned.Train) end
-        if State.AutoUpgrade then Replay(Learned.Upgrade) end
-        if State.AutoPlacePet then Replay(Learned.Equip) end
-        if State.AutoQuest then Replay(Learned.Quest) end
-        if State.AutoFusePet then Replay(Learned.Fuse) end
-    end
+local function setIconSize(px)
+    px = math.clamp(px, 36, 96)
+    State.iconSize = px
+    icon.Size = UDim2.new(0, px, 0, px)
+    icon.Position = UDim2.new(0, State.iconPos.x, 1, -State.iconPos.y)
+end
+
+minBtn.MouseButton1Click:Connect(function()
+    setIconVisible(true)
+    main.Visible = false
+    toast("Minimized to icon", CFG.SubText)
 end)
 
--- Auto Buy
-task.spawn(function()
-    while task.wait(2) do
-        if State.AutoBuyFood then Replay(Learned.Buy) end
-        if State.AutoBuyEvent then 
-            Replay(Learned.Buy)
-            task.wait(0.2)
-            Replay(Learned.Buy)
+-- Tabs
+local TAB_NAMES = { "Keyless", "Key System", "Animations", "Misc", "Config" }
+local tabRow = create("Frame", {
+    Parent = main,
+    Position = UDim2.new(0, 10, 0, 46),
+    Size = UDim2.new(1, -20, 0, 28),
+    BackgroundTransparency = 1,
+})
+local tabGap   = 4
+local tabWidth = math.floor(((winWidth - 20) - (tabGap * (#TAB_NAMES - 1))) / #TAB_NAMES)
+
+local tabButtons = {}
+for i, name in ipairs(TAB_NAMES) do
+    local btn = create("TextButton", {
+        Parent = tabRow,
+        Position = UDim2.new(0, (i - 1) * (tabWidth + tabGap), 0, 0),
+        Size = UDim2.new(0, tabWidth, 0, 28),
+        BackgroundColor3 = CFG.Button,
+        Text = name,
+        TextColor3 = CFG.Text,
+        Font = Enum.Font.GothamBold,
+        TextSize = 11,
+        BorderSizePixel = 0,
+        AutoButtonColor = false,
+    })
+    create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = btn })
+    tabButtons[i] = btn
+end
+
+-- Search
+local searchFrame = create("Frame", {
+    Parent = main,
+    Position = UDim2.new(0, 10, 0, 80),
+    Size = UDim2.new(1, -20, 0, 32),
+    BackgroundColor3 = CFG.Button,
+    BorderSizePixel = 0,
+    Visible = true,
+})
+create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = searchFrame })
+create("UIPadding", { PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10), Parent = searchFrame })
+
+local searchBox = create("TextBox", {
+    Parent = searchFrame,
+    Size = UDim2.new(1, 0, 1, 0),
+    BackgroundTransparency = 1,
+    Text = "",
+    PlaceholderText = "Search scripts...",
+    PlaceholderColor3 = CFG.SubText,
+    TextColor3 = CFG.Text,
+    Font = Enum.Font.Gotham,
+    TextSize = 13,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    ClearTextOnFocus = false,
+})
+
+-- Content Area
+local content = create("ScrollingFrame", {
+    Parent = main,
+    Position = UDim2.new(0, 10, 0, 118),
+    Size = UDim2.new(1, -20, 1, -154),
+    BackgroundTransparency = 1,
+    BorderSizePixel = 0,
+    ScrollBarThickness = 4,
+    ScrollBarImageColor3 = CFG.Accent,
+    CanvasSize = UDim2.new(0, 0, 0, 0),
+    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+})
+create("UIListLayout", {
+    Parent = content,
+    Padding = UDim.new(0, 6),
+    SortOrder = Enum.SortOrder.LayoutOrder,
+})
+
+local status = create("TextLabel", {
+    Parent = main,
+    Position = UDim2.new(0, 14, 1, -26),
+    Size = UDim2.new(1, -28, 0, 16),
+    BackgroundTransparency = 1,
+    Text = "Ready",
+    TextColor3 = CFG.SubText,
+    Font = Enum.Font.Gotham,
+    TextSize = 12,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    TextTruncate = Enum.TextTruncate.AtEnd,
+})
+
+local function setStatus(text, color)
+    status.Text = text
+    status.TextColor3 = color or CFG.SubText
+end
+
+local function clearContent()
+    for _, c in ipairs(content:GetChildren()) do
+        if c:IsA("TextButton") or c:IsA("Frame") or c:IsA("TextBox") or c:IsA("TextLabel") then
+            c:Destroy()
         end
     end
-end)
+end
 
--- Auto Throw (Finds any tool and throws it)
-task.spawn(function()
-    while task.wait(0.5) do
-        if State.AutoThrow then
-            local char = LP.Character
-            local backpack = LP:FindFirstChild("Backpack")
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            
-            if hum and backpack then
-                -- Find ANY tool in the backpack
-                local tool = backpack:FindFirstChildWhichIsA("Tool")
-                if tool then
-                    hum:EquipTool(tool)
-                    task.wait(0.1)
-                    tool:Activate()
-                    task.wait(0.1)
-                    hum:UnequipTools()
-                end
+local function makeButton(label, onClick)
+    local btn = create("TextButton", {
+        Parent = content,
+        Size = UDim2.new(1, 0, 0, 38),
+        BackgroundColor3 = CFG.Button,
+        Text = "  " .. label,
+        TextColor3 = CFG.Text,
+        Font = Enum.Font.GothamMedium,
+        TextSize = 13,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        BorderSizePixel = 0,
+        AutoButtonColor = false,
+        TextTruncate = Enum.TextTruncate.AtEnd,
+    })
+    create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = btn })
+    btn.MouseEnter:Connect(function() btn.BackgroundColor3 = CFG.Hover end)
+    btn.MouseButton1Click:Connect(onClick)
+    return btn
+end
+
+local function makeHeader(text)
+    create("TextLabel", {
+        Parent = content,
+        Size = UDim2.new(1, 0, 0, 20),
+        BackgroundTransparency = 1,
+        Text = text,
+        TextColor3 = CFG.Accent,
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    })
+end
+
+-- ... (The rest of the logic remains exactly the same) ...
+
+local function runScript(name, url, pre)
+    task.spawn(function()
+        setStatus("Loading " .. name .. "...", CFG.SubText)
+        toast("Loading " .. name, CFG.SubText)
+        local ok, err = pcall(function()
+            if pre then
+                local preFn = loadstring(pre)
+                if preFn then preFn() end
             end
+            local src = game:HttpGet(url)
+            local fn = loadstring(src)
+            if type(fn) ~= "function" then error("loadstring returned nil") end
+            fn()
+        end)
+        if ok then
+            setStatus(name .. " loaded", CFG.Good)
+            toast(name .. " loaded", CFG.Good)
+        else
+            setStatus(name .. " failed", CFG.Bad)
+            toast(name .. " failed", CFG.Bad)
+            warn("[" .. CFG.Name .. "] " .. name .. " failed: " .. tostring(err))
         end
+    end)
+end
+
+local function applyAnim(slotName, animId)
+    local folderName = SLOT_MAP[slotName]
+    if not folderName then return false, "unknown slot" end
+    local char = LP.Character
+    if not char then return false, "no character" end
+    local animate = char:FindFirstChild("Animate")
+    if not animate then return false, "no Animate folder" end
+    local folder = animate:FindFirstChild(folderName)
+    if not folder then return false, "no slot: " .. folderName end
+
+    local replaced = false
+    for _, obj in ipairs(folder:GetDescendants()) do
+        if obj:IsA("Animation") then
+            obj.AnimationId = "rbxassetid://" .. tostring(animId)
+            replaced = true
+        end
+    end
+    if not replaced then
+        local a = Instance.new("Animation")
+        a.Name = "Animation1"
+        a.AnimationId = "rbxassetid://" .. tostring(animId)
+        a.Parent = folder
+    end
+
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local animator = hum and hum:FindFirstChildOfClass("Animator")
+    if animator then
+        for _, tr in ipairs(animator:GetPlayingAnimationTracks()) do
+            tr:Stop(0)
+        end
+    end
+    return true
+end
+
+local function applyById(slotName, rawId)
+    local id = tostring(rawId):gsub("[^%d]", "")
+    if id == "" then return false, "invalid id" end
+    local ok, err = applyAnim(slotName, id)
+    if ok then State.anims[slotName] = id end
+    return ok, err
+end
+
+local searchText = ""
+local currentScriptGroup = nil
+
+local function renderScriptList(scripts)
+    clearContent()
+    local shown = 0
+    for _, s in ipairs(scripts) do
+        if searchText == "" or s.name:lower():find(searchText:lower(), 1, true) then
+            makeButton(s.name, function() runScript(s.name, s.url, s.pre) end)
+            shown = shown + 1
+        end
+    end
+    if shown == 0 then makeButton("No match", function() end) end
+    setStatus(currentScriptGroup .. " — " .. shown .. "/" .. #scripts, CFG.SubText)
+end
+
+local function renderAnimTab()
+    clearContent()
+    searchFrame.Visible = false
+    content.Position = UDim2.new(0, 10, 0, 80)
+
+    makeHeader("Apply saved anims")
+    makeButton("Apply saved to R6 rig", function()
+        local char = LP.Character
+        if not char or not char:FindFirstChild("Torso") then toast("Not R6 rig", CFG.Bad) return end
+        local n = 0
+        for slot, id in pairs(State.anims) do if applyAnim(slot, id) then n = n + 1 end end
+        toast("Applied " .. n .. " anims (R6)", CFG.Good)
+    end)
+    makeButton("Apply saved to R15 rig", function()
+        local char = LP.Character
+        if not char or not char:FindFirstChild("UpperTorso") then toast("Not R15 rig", CFG.Bad) return end
+        local n = 0
+        for slot, id in pairs(State.anims) do if applyAnim(slot, id) then n = n + 1 end end
+        toast("Applied " .. n .. " anims (R15)", CFG.Good)
+    end)
+
+    makeHeader("R6 — Built-in")
+    for _, a in ipairs(ANIMS.R6) do
+        makeButton(a.name, function()
+            local ok, err = applyAnim(a.name, a.id)
+            toast(ok and ("R6 " .. a.name .. " set") or tostring(err), ok and CFG.Good or CFG.Bad)
+        end)
+    end
+
+    makeHeader("R15 — Built-in")
+    for _, a in ipairs(ANIMS.R15) do
+        makeButton(a.name, function()
+            local ok, err = applyAnim(a.name, a.id)
+            toast(ok and ("R15 " .. a.name .. " set") or tostring(err), ok and CFG.Good or CFG.Bad)
+        end)
+    end
+
+    makeHeader("Custom")
+    local slotIdx = 1
+    local slotBtn = create("TextButton", {
+        Parent = content, Size = UDim2.new(1, 0, 0, 38),
+        BackgroundColor3 = CFG.Button, Text = "  Slot: " .. SLOT_LIST[slotIdx],
+        TextColor3 = CFG.Text, Font = Enum.Font.GothamMedium, TextSize = 13,
+        TextXAlignment = Enum.TextXAlignment.Left, BorderSizePixel = 0, AutoButtonColor = false,
+    })
+    create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = slotBtn })
+    slotBtn.MouseButton1Click:Connect(function()
+        slotIdx = slotIdx % #SLOT_LIST + 1
+        slotBtn.Text = "  Slot: " .. SLOT_LIST[slotIdx]
+    end)
+
+    local idBox = create("TextBox", {
+        Parent = content, Size = UDim2.new(1, 0, 0, 38),
+        BackgroundColor3 = CFG.Button, Text = "",
+        PlaceholderText = "Animation ID (e.g. 507771019)",
+        PlaceholderColor3 = CFG.SubText, TextColor3 = CFG.Text,
+        Font = Enum.Font.GothamMedium, TextSize = 13,
+        TextXAlignment = Enum.TextXAlignment.Left, BorderSizePixel = 0,
+        ClearTextOnFocus = false,
+    })
+    create("UICorner", { CornerRadius = UDim.new(0, 6), Parent = idBox })
+    create("UIPadding", { PaddingLeft = UDim.new(0, 12), Parent = idBox })
+
+    makeButton("Apply custom ID", function()
+        local slot = SLOT_LIST[slotIdx]
+        local ok, err = applyById(slot, idBox.Text)
+        toast(ok and ("Applied to " .. slot) or ("Failed: " .. tostring(err)), ok and CFG.Good or CFG.Bad)
+    end)
+
+    setStatus("Animations", CFG.SubText)
+end
+
+-- Server Hop Logic
+local function serverHop(lowestPlayers)
+    local placeId = game.PlaceId
+    local jobId = game.JobId
+    local url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100"
+    toast("Finding server...", CFG.SubText)
+
+    local success, response = pcall(function() return game:HttpGet(url) end)
+    if not success or not response then toast("Failed to fetch servers", CFG.Bad) return end
+    local ok, data = pcall(function() return HS:JSONDecode(response) end)
+    if not ok or not data or not data.data then toast("Server data error", CFG.Bad) return end
+
+    local servers = data.data
+    if not servers or #servers == 0 then toast("No servers found", CFG.Bad) return end
+
+    if lowestPlayers then
+        table.sort(servers, function(a, b) return a.playing < b.playing end)
+    end
+
+    local targetServer = nil
+    local targetPlayers = 0
+    for _, server in ipairs(servers) do
+        if server.id ~= jobId and server.playing < server.maxPlayers then
+            targetServer = server.id
+            targetPlayers = server.playing
+            break
+        end
+    end
+
+    if targetServer then
+        toast("Hopping to server with " .. targetPlayers .. " players...", CFG.Good)
+        task.wait(1)
+        pcall(function() TS:TeleportToPlaceInstance(placeId, targetServer, LP) end)
+    else
+        toast("No available servers found", CFG.Bad)
+    end
+end
+
+-- Anti-Kick / Anti-Guard Hook
+if hookmetamethod then
+    local mt = getrawmetatable(game)
+    local old = mt.__namecall
+    setreadonly(mt, false)
+    mt.__namecall = newcclosure(function(self, ...)
+        local method = getnamecallmethod()
+        if State.antiKick and method == "Kick" and self == LP then return nil end
+        if State.antiGuard and method == "TakeDamage" and self:IsA("Humanoid") and self.Parent == LP.Character then return nil end
+        return old(self, ...)
+    end)
+    setreadonly(mt, true)
+end
+
+local function renderMiscTab()
+    clearContent()
+    searchFrame.Visible = false
+    content.Position = UDim2.new(0, 10, 0, 80)
+
+    makeHeader("Server Hop")
+    makeButton("Server Hop (Any)", function() serverHop(false) end)
+    makeButton("Server Hop (Lowest Players)", function() serverHop(true) end)
+
+    makeHeader("Security")
+    local kickBtn = makeButton("Anti-Kick: " .. (State.antiKick and "ON" or "OFF"), function() end)
+    kickBtn.MouseButton1Click:Connect(function()
+        State.antiKick = not State.antiKick
+        kickBtn.Text = "  Anti-Kick: " .. (State.antiKick and "ON" or "OFF")
+        kickBtn.TextColor3 = State.antiKick and CFG.Good or CFG.Text
+        toast("Anti-Kick " .. (State.antiKick and "enabled" or "disabled"), State.antiKick and CFG.Good or CFG.Bad)
+    end)
+    kickBtn.TextColor3 = State.antiKick and CFG.Good or CFG.Text
+
+    local guardBtn = makeButton("Anti-Guard: " .. (State.antiGuard and "ON" or "OFF"), function() end)
+    guardBtn.MouseButton1Click:Connect(function()
+        State.antiGuard = not State.antiGuard
+        guardBtn.Text = "  Anti-Guard: " .. (State.antiGuard and "ON" or "OFF")
+        guardBtn.TextColor3 = State.antiGuard and CFG.Good or CFG.Text
+        toast("Anti-Guard " .. (State.antiGuard and "enabled" or "disabled"), State.antiGuard and CFG.Good or CFG.Bad)
+    end)
+    guardBtn.TextColor3 = State.antiGuard and CFG.Good or CFG.Text
+
+    makeHeader("Floating Icon")
+    local visBtn = makeButton("Icon visible: " .. (State.iconOn and "ON" or "OFF"), function() end)
+    visBtn.MouseButton1Click:Connect(function()
+        setIconVisible(not State.iconOn)
+        visBtn.Text = "  Icon visible: " .. (State.iconOn and "ON" or "OFF")
+        visBtn.TextColor3 = State.iconOn and CFG.Good or CFG.Text
+        toast("Icon " .. (State.iconOn and "shown" or "hidden"), State.iconOn and CFG.Good or CFG.SubText)
+    end)
+    visBtn.TextColor3 = State.iconOn and CFG.Good or CFG.Text
+
+    local sizeBtn = makeButton("Icon size: " .. State.iconSize .. "px (tap to cycle)", function() end)
+    sizeBtn.MouseButton1Click:Connect(function()
+        local sizes = { 44, 56, 72, 88 }
+        local cur = State.iconSize
+        local nextIdx = 1
+        for i, s in ipairs(sizes) do if s == cur then nextIdx = i % #sizes + 1 break end end
+        setIconSize(sizes[nextIdx])
+        sizeBtn.Text = "  Icon size: " .. State.iconSize .. "px (tap to cycle)"
+        toast("Icon size: " .. State.iconSize, CFG.SubText)
+    end)
+
+    makeButton("Reset icon position", function()
+        State.iconPos.x = 40
+        State.iconPos.y = 120
+        icon.Position = UDim2.new(0, State.iconPos.x, 1, -State.iconPos.y)
+        toast("Icon position reset", CFG.SubText)
+    end)
+
+    makeButton("Minimize to icon now", function()
+        setIconVisible(true)
+        main.Visible = false
+        toast("Minimized", CFG.SubText)
+    end)
+
+    makeHeader("How to use")
+    makeButton("Read tips", function()
+        toast("Drag icon anywhere • Tap icon to open/close hub", CFG.SubText)
+    end)
+
+    setStatus("Misc — Floating Icon", CFG.SubText)
+end
+
+local function saveConfig()
+    if not writefile then toast("writefile not available", CFG.Bad) return false end
+    local payload = {
+        anims    = State.anims,
+        iconOn   = State.iconOn,
+        iconPos  = State.iconPos,
+        iconSize = State.iconSize,
+    }
+    local ok, encoded = pcall(function() return HS:JSONEncode(payload) end)
+    if not ok then toast("encode failed", CFG.Bad) return false end
+    local ok2, err = pcall(writefile, CONFIG_FILE, encoded)
+    if not ok2 then toast("save failed: " .. tostring(err), CFG.Bad) return false end
+    toast("Config saved", CFG.Good)
+    return true
+end
+
+local function loadConfig(applyAnims)
+    if not (isfile and readfile) then toast("no file API", CFG.Bad) return false end
+    if not isfile(CONFIG_FILE) then toast("no saved config", CFG.Bad) return false end
+    local ok, content_ = pcall(readfile, CONFIG_FILE)
+    if not ok then toast("read failed", CFG.Bad) return false end
+    local ok2, decoded = pcall(function() return HS:JSONDecode(content_) end)
+    if not ok2 or type(decoded) ~= "table" then toast("bad config file", CFG.Bad) return false end
+
+    State.anims = decoded.anims or {}
+    if decoded.iconOn ~= nil then setIconVisible(decoded.iconOn) end
+    if decoded.iconPos then
+        State.iconPos.x = decoded.iconPos.x or 40
+        State.iconPos.y = decoded.iconPos.y or 120
+        icon.Position = UDim2.new(0, State.iconPos.x, 1, -State.iconPos.y)
+    end
+    if decoded.iconSize then setIconSize(decoded.iconSize) end
+
+    toast("Config loaded", CFG.Good)
+    if applyAnims then
+        local n = 0
+        for slot, id in pairs(State.anims) do if applyAnim(slot, id) then n = n + 1 end end
+        toast("Applied " .. n .. " anims", CFG.Good)
+    end
+    return true
+endlocal function renderConfigTab()
+    clearContent()
+    searchFrame.Visible = false
+    content.Position = UDim2.new(0, 10, 0, 80)
+
+    makeButton("Save config", function() saveConfig() end)
+    makeButton("Load config (no apply)", function() loadConfig(false) end)
+    makeButton("Load + apply anims", function() loadConfig(true) end)
+    makeButton("Reset anim memory", function()
+        State.anims = {}
+        toast("Cleared anim memory", CFG.SubText)
+    end)
+    makeButton("Delete config file", function()
+        if delfile then pcall(delfile, CONFIG_FILE); toast("Deleted", CFG.SubText)
+        else toast("delfile not available", CFG.Bad) end
+    end)
+
+    setStatus("Config — " .. CONFIG_FILE, CFG.SubText)
+end
+
+local function showTab(idx)
+    for i, btn in ipairs(tabButtons) do
+        btn.BackgroundColor3 = (i == idx) and CFG.Accent or CFG.Button
+    end
+
+    local name = TAB_NAMES[idx]
+    if name == "Keyless" then
+        currentScriptGroup = "Keyless"
+        searchFrame.Visible = true
+        content.Position = UDim2.new(0, 10, 0, 118)
+        renderScriptList(HUB_SCRIPTS[1].scripts)
+    elseif name == "Key System" then
+        currentScriptGroup = "Key System"
+        searchFrame.Visible = true
+        content.Position = UDim2.new(0, 10, 0, 118)
+        renderScriptList(HUB_SCRIPTS[2].scripts)
+    elseif name == "Animations" then
+        renderAnimTab()
+    elseif name == "Misc" then
+        renderMiscTab()
+    elseif name == "Config" then
+        renderConfigTab()
+    end
+end
+
+searchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    searchText = searchBox.Text
+    if currentScriptGroup == "Keyless" then
+        renderScriptList(HUB_SCRIPTS[1].scripts)
+    elseif currentScriptGroup == "Key System" then
+        renderScriptList(HUB_SCRIPTS[2].scripts)
     end
 end)
 
---==================================================
--- FLOATING TOGGLE
---==================================================
-local floatBtn = Instance.new("TextButton")
-floatBtn.Size = UDim2.fromOffset(50, 50)
-floatBtn.Position = UDim2.fromOffset(20, 300)
-floatBtn.AnchorPoint = Vector2.new(0, 1)
-floatBtn.BackgroundColor3 = Theme.BG
-floatBtn.Text = "Q"
-floatBtn.TextColor3 = Theme.Accent
-floatBtn.Font = Enum.Font.GothamBold
-floatBtn.TextSize = 20
-floatBtn.BorderSizePixel = 0
-floatBtn.Parent = Gui
-Instance.new("UICorner", floatBtn).CornerRadius = UDim.new(1, 0)
+for i, btn in ipairs(tabButtons) do
+    btn.MouseButton1Click:Connect(function() showTab(i) end)
+end
 
-local fStroke = Instance.new("UIStroke")
-fStroke.Color = Theme.Accent
-fStroke.Thickness = 2
-fStroke.Parent = floatBtn
-
-local fDrag, fMoved, fStart, fPos
-floatBtn.InputBegan:Connect(function(i) 
-    if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then 
-        fDrag = true; fMoved = false; fStart = i.Position; fPos = floatBtn.Position
-    end 
-end)
-UIS.InputChanged:Connect(function(i) 
-    if fDrag and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then 
-        local d = i.Position - fStart
-        if math.abs(d.X) > 5 or math.abs(d.Y) > 5 then fMoved = true end
-        floatBtn.Position = UDim2.new(fPos.X.Scale, fPos.X.Offset + d.X, fPos.Y.Scale, fPos.Y.Offset + d.Y)
-    end 
-end)
-UIS.InputEnded:Connect(function(i) 
-    if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then 
-        fDrag = false
-        if not fMoved then Main.Visible = not Main.Visible end
-    end 
-end)
+pcall(loadConfig, false)
+showTab(1)
+toast("QUEEN/MEI Hub v3.1 ready", CFG.Accent)

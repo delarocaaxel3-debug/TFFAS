@@ -1,12 +1,12 @@
 --==================================================
 -- TFFA (THROW A FOOD FOR ANIMALS) - QUEEN HUB
--- Keyless Version
+-- Features: Live Sniffer, FPS/Ping, Auto Farm
 --==================================================
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
-local RS = game:GetService("ReplicatedStorage")
+local Stats = game:GetService("Stats")
 local LP = Players.LocalPlayer
 local PlayerGui = LP:WaitForChild("PlayerGui")
 
@@ -16,7 +16,7 @@ local Theme = {
     Sidebar = Color3.fromRGB(20, 20, 25),
     Text    = Color3.fromRGB(255, 255, 255),
     Muted   = Color3.fromRGB(130, 130, 140),
-    Accent  = Color3.fromRGB(0, 200, 255), -- Cyan
+    Accent  = Color3.fromRGB(0, 200, 255),
     Good    = Color3.fromRGB(0, 255, 100),
     Bad     = Color3.fromRGB(255, 60, 60)
 }
@@ -25,6 +25,11 @@ local State = {
     AutoTrain = false, AutoUpgrade = false, AutoThrow = false,
     AutoBuyFood = false, AutoPlacePet = false, AutoQuest = false,
     AutoBuyEvent = false, AutoFusePet = false
+}
+
+-- The Sniffer Memory
+local Learned = {
+    Train = nil, Upgrade = nil, Buy = nil, Equip = nil, Quest = nil, Fuse = nil
 }
 
 -- Cleanup
@@ -72,7 +77,7 @@ headerFix.BorderSizePixel = 0
 headerFix.Parent = Header
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -100, 1, 0)
+Title.Size = UDim2.new(0.5, 0, 1, 0)
 Title.Position = UDim2.fromOffset(15, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "QUEEN HUB | TFFA"
@@ -81,6 +86,18 @@ Title.Font = Enum.Font.GothamBold
 Title.TextSize = 14
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = Header
+
+-- FPS / PING LABEL
+local statsLabel = Instance.new("TextLabel")
+statsLabel.Size = UDim2.new(0.5, -40, 1, 0)
+statsLabel.Position = UDim2.new(0.5, 0, 0, 0)
+statsLabel.BackgroundTransparency = 1
+statsLabel.Text = "FPS: -- | Ping: -- ms"
+statsLabel.TextColor3 = Theme.Accent
+statsLabel.Font = Enum.Font.Code
+statsLabel.TextSize = 12
+statsLabel.TextXAlignment = Enum.TextXAlignment.Right
+statsLabel.Parent = Header
 
 local Close = Instance.new("TextButton")
 Close.Size = UDim2.fromOffset(20, 20)
@@ -111,7 +128,7 @@ local sideList = Instance.new("UIListLayout")
 sideList.Padding = UDim.new(0, 2)
 sideList.Parent = Sidebar
 
-local tabs = {{"Farming", "🌾"}, {"Events", "🎃"}, {"Settings", "⚙️"}}
+local tabs = {{"Farming", "🌾"}, {"Events", "🎃"}, {"Sniffer", "📡"}}
 local tabBtns = {}
 
 for i, data in ipairs(tabs) do
@@ -148,22 +165,16 @@ local function MakePage(name)
     p.Visible = (name == "Farming")
     p.Parent = Pages
     Instance.new("UICorner", p).CornerRadius = UDim.new(0, 8)
-    
     local pad = Instance.new("UIPadding", p)
-    pad.PaddingTop = UDim.new(0, 10)
-    pad.PaddingLeft = UDim.new(0, 10)
-    pad.PaddingRight = UDim.new(0, 10)
-    pad.PaddingBottom = UDim.new(0, 10)
-    
+    pad.PaddingTop = UDim.new(0, 10); pad.PaddingLeft = UDim.new(0, 10); pad.PaddingRight = UDim.new(0, 10); pad.PaddingBottom = UDim.new(0, 10)
     local list = Instance.new("UIListLayout", p)
-    list.Padding = UDim.new(0, 8)
-    list.SortOrder = Enum.SortOrder.LayoutOrder
+    list.Padding = UDim.new(0, 8); list.SortOrder = Enum.SortOrder.LayoutOrder
     return p
 end
 
 local pFarm = MakePage("Farming")
 local pEvent = MakePage("Events")
-local pSettings = MakePage("Settings")
+local pSniffer = MakePage("Sniffer")
 
 -- UI Components
 local function MakeToggle(parent, text, default, callback)
@@ -211,99 +222,144 @@ MakeToggle(pEvent, "1. Auto Quest", false, function(v) State.AutoQuest = v end)
 MakeToggle(pEvent, "2. Auto Buy 2x Boosts", false, function(v) State.AutoBuyEvent = v end)
 MakeToggle(pEvent, "3. Auto Fuse Best Pet", false, function(v) State.AutoFusePet = v end)
 
--- Settings Page
-local smartLog = Instance.new("TextLabel")
-smartLog.Size = UDim2.new(1, 0, 0, 60)
-smartLog.BackgroundColor3 = Theme.BG
-smartLog.Text = "Remote Engine: SCANNING...\nWaiting for game to load remotes."
-smartLog.TextColor3 = Theme.Muted
-smartLog.Font = Enum.Font.Code
-smartLog.TextSize = 11
-smartLog.TextWrapped = true
-smartLog.Parent = pSettings
-Instance.new("UICorner", smartLog).CornerRadius = UDim.new(0, 6)
+-- Sniffer Page
+local snifferLog = Instance.new("TextLabel")
+snifferLog.Size = UDim2.new(1, 0, 0, 150)
+snifferLog.BackgroundColor3 = Theme.BG
+snifferLog.Text = "Waiting for you to click...\n\nIf a toggle isn't working, play the game manually. The script will learn the remote and show it here."
+snifferLog.TextColor3 = Theme.Good
+snifferLog.Font = Enum.Font.Code
+snifferLog.TextSize = 11
+snifferLog.TextWrapped = true
+snifferLog.TextYAlignment = Enum.TextYAlignment.Top
+snifferLog.Parent = pSniffer
+Instance.new("UICorner", snifferLog).CornerRadius = UDim.new(0, 6)
 
 -- Tab Switching
 tabBtns[1].MouseButton1Click:Connect(function()
-    pFarm.Visible = true; pEvent.Visible = false; pSettings.Visible = false
+    pFarm.Visible = true; pEvent.Visible = false; pSniffer.Visible = false
     tabBtns[1].TextColor3 = Theme.Accent; tabBtns[2].TextColor3 = Theme.Muted; tabBtns[3].TextColor3 = Theme.Muted
 end)
 tabBtns[2].MouseButton1Click:Connect(function()
-    pFarm.Visible = false; pEvent.Visible = true; pSettings.Visible = false
+    pFarm.Visible = false; pEvent.Visible = true; pSniffer.Visible = false
     tabBtns[1].TextColor3 = Theme.Muted; tabBtns[2].TextColor3 = Theme.Accent; tabBtns[3].TextColor3 = Theme.Muted
 end)
 tabBtns[3].MouseButton1Click:Connect(function()
-    pFarm.Visible = false; pEvent.Visible = false; pSettings.Visible = true
+    pFarm.Visible = false; pEvent.Visible = false; pSniffer.Visible = true
     tabBtns[1].TextColor3 = Theme.Muted; tabBtns[2].TextColor3 = Theme.Muted; tabBtns[3].TextColor3 = Theme.Accent
 end)
 
 --==================================================
--- REMOTE ENGINE (AUTOMATIC SCANNER)
+-- LIVE SNIFFER & FPS/PING
 --==================================================
-local Remotes = {}
-for _, v in ipairs(RS:GetDescendants()) do
-    if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
-        table.insert(Remotes, v)
-    end
-end
+local frames = 0
+local lastTime = tick()
 
-smartLog.Text = "Found " .. tostring(#Remotes) .. " remotes. Engine Ready."
-
-local function SafeFire(keyword, ...)
-    for _, remote in ipairs(Remotes) do
-        if remote.Name:lower():find(keyword) then
-            pcall(function()
-                if remote:IsA("RemoteEvent") then remote:FireServer(...)
-                else remote:InvokeServer(...) end
-            end)
-        end
-    end
-end
-
---==================================================
--- AUTO FARM LOOPS
---==================================================
-task.spawn(function()
-    while task.wait(0.5) do
-        if State.AutoTrain then SafeFire("train") end
-        if State.AutoUpgrade then SafeFire("upgrade") end
-        if State.AutoPlacePet then SafeFire("equip") end
-        if State.AutoQuest then SafeFire("quest") end
-        if State.AutoFusePet then SafeFire("fuse") end
+RunService.RenderStepped:Connect(function()
+    -- FPS/Ping Counter
+    frames = frames + 1
+    local currentTime = tick()
+    if currentTime - lastTime >= 1 then
+        local fps = frames
+        frames = 0
+        lastTime = currentTime
+        
+        local ping = "N/A"
+        pcall(function()
+            ping = Stats.Network.ServerStatsItem["Data Ping"]:GetValueString()
+        end)
+        statsLabel.Text = string.format("FPS: %d | Ping: %s", fps, ping)
     end
 end)
 
--- Auto Throw
-task.spawn(function()
-    while task.wait(0.2) do
-        if State.AutoThrow then
-            local char = LP.Character
-            local backpack = LP:FindFirstChild("Backpack")
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            
-            if hum and backpack then
-                for _, item in ipairs(backpack:GetChildren()) do
-                    if item:IsA("Tool") and (item.Name:lower():find("food") or item.Name:lower():find("meat")) then
-                        hum:EquipTool(item)
-                        task.wait(0.1)
-                        item:Activate()
-                        task.wait(0.1)
-                        hum:UnequipTools()
-                        break
-                    end
-                end
-            end
+-- The Hook (Learns from you)
+local oldNamecall
+oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+    local method = getnamecallmethod()
+    local args = {...}
+    
+    if method == "FireServer" or method == "InvokeServer" then
+        local name = self.Name:lower()
+        
+        -- If you manually do the action, it learns it
+        if name:find("train") or name:find("pull") or name:find("click") then
+            Learned.Train = {Remote = self, Args = args}
+            snifferLog.Text = "✅ Learned Train: " .. self.Name
+        elseif name:find("upgrade") or name:find("strength") then
+            Learned.Upgrade = {Remote = self, Args = args}
+            snifferLog.Text = "✅ Learned Upgrade: " .. self.Name
+        elseif name:find("buy") or name:find("purchase") then
+            Learned.Buy = {Remote = self, Args = args}
+            snifferLog.Text = "✅ Learned Buy: " .. self.Name
+        elseif name:find("equip") or name:find("pet") then
+            Learned.Equip = {Remote = self, Args = args}
+            snifferLog.Text = "✅ Learned Pet: " .. self.Name
+        elseif name:find("quest") then
+            Learned.Quest = {Remote = self, Args = args}
+            snifferLog.Text = "✅ Learned Quest: " .. self.Name
+        elseif name:find("fuse") then
+            Learned.Fuse = {Remote = self, Args = args}
+            snifferLog.Text = "✅ Learned Fuse: " .. self.Name
         end
+    end
+    return oldNamecall(self, ...)
+end)
+
+--==================================================
+-- AUTO FARM LOOPS (Using Learned Data)
+--==================================================
+local function Replay(Data)
+    if not Data or not Data.Remote then return end
+    pcall(function()
+        if Data.Remote:IsA("RemoteEvent") then
+            Data.Remote:FireServer(unpack(Data.Args))
+        else
+            Data.Remote:InvokeServer(unpack(Data.Args))
+        end
+    end)
+end
+
+task.spawn(function()
+    while task.wait(0.5) do
+        if State.AutoTrain then Replay(Learned.Train) end
+        if State.AutoUpgrade then Replay(Learned.Upgrade) end
+        if State.AutoPlacePet then Replay(Learned.Equip) end
+        if State.AutoQuest then Replay(Learned.Quest) end
+        if State.AutoFusePet then Replay(Learned.Fuse) end
     end
 end)
 
 -- Auto Buy
 task.spawn(function()
     while task.wait(2) do
-        if State.AutoBuyFood then SafeFire("buy") end
+        if State.AutoBuyFood then Replay(Learned.Buy) end
         if State.AutoBuyEvent then 
-            SafeFire("buy", "2xStrength")
-            SafeFire("buy", "2xMoney")
+            Replay(Learned.Buy)
+            task.wait(0.2)
+            Replay(Learned.Buy)
+        end
+    end
+end)
+
+-- Auto Throw (Finds any tool and throws it)
+task.spawn(function()
+    while task.wait(0.5) do
+        if State.AutoThrow then
+            local char = LP.Character
+            local backpack = LP:FindFirstChild("Backpack")
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            
+            if hum and backpack then
+                -- Find ANY tool in the backpack
+                local tool = backpack:FindFirstChildWhichIsA("Tool")
+                if tool then
+                    hum:EquipTool(tool)
+                    task.wait(0.1)
+                    tool:Activate()
+                    task.wait(0.1)
+                    hum:UnequipTools()
+                end
+            end
         end
     end
 end)
@@ -348,5 +404,3 @@ UIS.InputEnded:Connect(function(i)
         if not fMoved then Main.Visible = not Main.Visible end
     end 
 end)
- notify("QUEEN HUB LOADED")
-end
